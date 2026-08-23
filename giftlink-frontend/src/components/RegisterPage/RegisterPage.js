@@ -1,16 +1,67 @@
 import React, { useState } from 'react';
 import './RegisterPage.css';
 
+// Task 1: Import urlConfig
+import { urlConfig } from '../../config';
+// Task 2: Import useAppContext
+import { useAppContext } from '../../context/AuthContext';
+// Task 3: Import useNavigate
+import { useNavigate } from 'react-router-dom';
+
 function RegisterPage() {
-    // Definición de las variables de estado para el formulario
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    
+    // Task 4: Include a state for error message
+    const [showerr, setShowerr] = useState('');
 
-    // Función que se ejecuta al hacer clic en el botón
+    // Task 5: Create a local variable for navigate and setIsLoggedIn
+    const navigate = useNavigate();
+    const { setIsLoggedIn } = useAppContext();
+
     const handleRegister = async () => {
-        console.log("Register invoked");
+        try {
+            const response = await fetch(`${urlConfig.backendUrl}/api/auth/register`, {
+                // Task 6: Set method
+                method: 'POST',
+                // Task 7: Set headers
+                headers: {
+                    'content-type': 'application/json',
+                },
+                // Task 8: Set body to send user details
+                body: JSON.stringify({
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    password: password
+                })
+            });
+
+            // Step 2 - Task 1: Access data coming from fetch API
+            const json = await response.json();
+
+            // Step 2 - Task 2: Set user details in session storage
+            if (json.authtoken) {
+                sessionStorage.setItem('auth-token', json.authtoken);
+                sessionStorage.setItem('name', firstName);
+                sessionStorage.setItem('email', json.email);
+                
+                // Step 2 - Task 3: Set the state of user to logged in using the useAppContext
+                setIsLoggedIn(true);
+                
+                // Step 2 - Task 4: Navigate to the MainPage after logging in
+                navigate('/app');
+            } else if (json.error) {
+                // Step 2 - Task 5: Set an error message if the registration fails
+                setShowerr(json.error);
+            }
+
+        } catch (e) {
+            console.log("Error fetching details: " + e.message);
+            setShowerr(e.message);
+        }
     };
 
     return (
@@ -19,6 +70,9 @@ function RegisterPage() {
                 <div className="col-md-6 col-lg-4">
                     <div className="register-card p-4 border rounded">
                         <h2 className="text-center mb-4 font-weight-bold">Register</h2>
+
+                        {/* Step 2 - Task 6: Display error message to end user */}
+                        {showerr && <div className="alert alert-danger mb-3">{showerr}</div>}
 
                         {/* Input para First Name */}
                         <div className="mb-4">
