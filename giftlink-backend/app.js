@@ -1,5 +1,4 @@
 /*jshint esversion: 8 */
-/*jshint esversion: 8 */
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -15,9 +14,7 @@ const port = 3060;
 // Connect to MongoDB; we just do this one time
 connectToDatabase().then(() => {
     pinoLogger.info('Connected to DB');
-})
-    .catch((e) => console.error('Failed to connect to DB', e));
-
+}).catch((e) => console.error('Failed to connect to DB', e)); // Añadido punto y coma y subido a la misma línea
 
 app.use(express.json());
 
@@ -55,8 +52,8 @@ app.use((err, req, res, next) => {
 });
 
 app.get("/",(req,res)=>{
-    res.send("Inside the server")
-})
+    res.send("Inside the server"); // Añadido punto y coma
+}); // Añadido punto y coma
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
